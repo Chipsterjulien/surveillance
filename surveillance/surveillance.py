@@ -1,6 +1,8 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+# Pour appliquer un masque, regarder ici:
+# https://stackoverflow.com/questions/10469235/opencv-apply-mask-to-a-color-image/38493075
 
 import argparse
 import configparser
@@ -75,7 +77,11 @@ def check_motion(*args, **kwargs):
         thresh = cv2.dilate(thresh, None, iterations=2)
         cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
                                 cv2.CHAIN_APPROX_SIMPLE)
-        cnts = cnts[0] if imutils.is_cv2() else cnts[1]
+
+        if cnts is not None and len(cnts) > 0:
+            cnts = cnts[0]
+        else:
+            continue
 
         if which_frame == "gray":
             frame = cv2.cvtColor(gray, cv2.COLOR_GRAY2BGR)
@@ -253,7 +259,8 @@ def read_frames(*args, **kwargs):
         else:
             queue.put(frame)
 
-    frame.release()
+    if frame is not None:
+        frame.release()
 
 
 def write_frames(*args, **kwargs):
@@ -323,11 +330,11 @@ def main(*args, **kwargs):
 
 
 if __name__ == "__main__":
-    config_file = "surveillance/surveillance/cfg/surveillance_sample.conf"
-    log_file = "surveillance/surveillance/error.log"
+    # config_file = "surveillance/surveillance/cfg/surveillance_sample.conf"
+    # log_file = "surveillance/surveillance/error.log"
 
-    # config_file = "/etc/surveillance/surveillance.conf"
-    # log_file = "/var/log/surveillance/errors.log"
+    config_file = "/etc/surveillance/surveillance.conf"
+    log_file = "/var/log/surveillance/errors.log"
 
     parser = get_params(config_file=config_file)
     main(config_file=config_file, log_file=log_file, parser=parser)

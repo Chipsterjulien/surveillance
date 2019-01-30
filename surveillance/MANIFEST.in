@@ -1,0 +1,7 @@
+include AUTHOR
+include LICENSE
+include MANIFEST.in
+include README.md
+
+recursive-include surveillance *
+recursive-include cfg *
